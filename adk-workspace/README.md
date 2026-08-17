@@ -6,6 +6,7 @@ The examples demonstrate two ways of defining an agent:
 
 - `my_first_agent/` contains a Python agent defined in `agent.py`.
 - `my_config_agent/` contains an agent configured in YAML through `root_agent.yaml`.
+- `customer_support_agent/` contains a Python customer support agent defined in `agent.py`.
 
 The agents are algebra tutors designed to guide students step by step through problem-solving.
 
@@ -15,7 +16,7 @@ The agents are algebra tutors designed to guide students step by step through pr
 
 - Python installed on your machine
 - The project dependencies installed in the `.venv` virtual environment
-- A valid configuration for the Google services used by ADK, including any credentials or environment variables required by the selected model
+- A Google API key already available to you
 
 Using a Python virtual environment keeps this project's dependencies isolated from other projects and helps prevent version conflicts.
 
@@ -55,6 +56,34 @@ Do not use:
 
 Executing the script directly runs it in a subshell. The virtual environment may then be active only while the script is running, and the activation is lost when the script exits.
 
+### Configure the Google API key
+
+The agents use a Google API key through environment variables loaded from a `.env` file. You must already have a valid Google API key before completing this setup.
+
+The repository includes [.env.template](.env.template), which contains the required variable names without a real secret:
+
+```dotenv
+GOOGLE_GENAI_USE_ENTERPRISE=0
+GOOGLE_API_KEY=your_google_api_key_here
+```
+
+Create a separate `.env` file for each agent project you want to run. From the repository root, copy the template into the project directory:
+
+Then open each `.env` file you intend to use and replace `your_google_api_key_here` with your actual Google API key. For example, to configure only `my_first_agent`:
+
+```bash
+cp .env.template my_first_agent/.env
+$EDITOR my_first_agent/.env
+```
+
+The resulting file must contain your key on the `GOOGLE_API_KEY` line:
+
+```dotenv
+GOOGLE_GENAI_USE_ENTERPRISE=0
+GOOGLE_API_KEY=your_actual_google_api_key
+```
+For example, `adk web my_first_agent` uses `my_first_agent/.env`; it does not use the `.env` file from another project.
+
 ### Run an agent
 
 After activating the virtual environment, use the appropriate ADK command for the agent you want to test. For example, from the project root:
@@ -69,10 +98,16 @@ For the agent defined in YAML:
 adk web my_config_agent
 ```
 
+For the customer support agent:
+
+```bash
+adk web customer_support_agent
+```
+
 The `adk web` command starts the ADK development web interface. Check the terminal output for the local address to open in your browser.
 
 ## Notes
 
 - The activation script must be run from the project root because it references `.venv/bin/activate` using a relative path.
-- The models used in the examples may require authentication and Google Cloud or Gemini configuration before they can be used.
+- The models used in the examples require the Google API key configuration described above before they can be used.
 - The files in this repository are intended for learning and follow the exercises from Google's official ADK training courses.
