@@ -64,10 +64,12 @@ coordinator = Agent(
 # --- Internal Knowledge Nodes ---
 
 # TODO => DONE Task 4.1: Expose a Python function as a Workflow Node
+#bq = Big Query
 @node(name="query_bq_node")
 def query_bq(ctx: Context, node_input: Any) -> Event:
     """Runs semantic BQ vector search to find similar past incident reports."""
     result = find_similar_bugs(str(node_input))
+    # Store the result in shared workflow state for internal_analyst to consume.
     return Event(state={"query_bq_node": result}, output=result)
 
 #VAIS = Vertex AI Search
@@ -86,6 +88,7 @@ search_vais_agent = Agent(
     model=MODEL,
     instruction="""
     You are the Internal Documentation Searcher.
+    # This agent queries Vertex AI Search with clean_query, not with query_bq_node.
     Search the internal documentation using your Vertex AI Search tool for details matching the incident query: {clean_query}
 
     Output a clear list of matching pages, errors, or troubleshooting procedures you find.
@@ -148,6 +151,7 @@ developer_kb_mcp = registry.get_mcp_toolset(
     f"projects/{PROJECT_ID}/locations/{MCP_SERVER_LOCATION}/mcpServers/{MCP_SERVER_NAME}"
 )
 
+# KB = Knowledge Base
 mcp_kb_agent = Agent(
     name="mcp_kb_agent",
     model=MODEL,
@@ -216,9 +220,12 @@ root_agent = Workflow(
     edges=[
         ('START', coordinator),
         (coordinator, query_bq),
+        # This edge sequences Vertex AI Search after BigQuery; it does not pass
+        # the BigQuery result to search_vais_agent. Both agents use clean_query.
         (query_bq, search_vais_agent),
         (coordinator, web_search_agent),
         (coordinator, mcp_kb_agent),
+        # internal_analyst reads query_bq_node and vais_search_data from workflow state.
         (search_vais_agent, internal_analyst),
         (web_search_agent, merge_join),
         (mcp_kb_agent, merge_join),
