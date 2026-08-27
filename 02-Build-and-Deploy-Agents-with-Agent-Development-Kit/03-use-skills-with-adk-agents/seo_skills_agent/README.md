@@ -12,6 +12,46 @@ The agent helps marketing teams and content creators to:
 
 The skills-based approach makes it easy to reuse and combine focused behaviors (for example `blog-writer`, `seo-checklist`, `skill-creator`) across different conversational scenarios.
 
+## Results
+
+The following captures show the SEO skills agent loading and using reusable skills for content creation, SEO review, and skill creation.
+
+### 1. Blog writing and SEO checklist
+
+![Blog writing and SEO checklist](images/image2.png)
+
+**Prompt**
+
+> Use your blog-writer skill to write a short post about Python async programming. Then reflect on that post using your seo-checklist skill.
+
+**Result**
+
+The agent loaded the `seo-checklist` skill and generated a draft blog post about Python asynchronous programming, including an SEO-friendly title, URL slug, and meta description.
+
+### 2. Skill creation
+
+![Skill creation workflow](images/image3.png)
+
+**Prompt**
+
+> I need a new skill for reviewing Python code for security vulnerabilities. Can you create content for a SKILL.md?
+
+**Result**
+
+The agent identified the exact `skill-creator` skill after checking the available skill names, then loaded it to guide the creation of a new `SKILL.md`.
+
+### 3. Available skills inspection
+
+![Available skills inspection](images/image1.png)
+
+**Prompt**
+
+> Can you review the following request and tell me which skills are available for it?
+
+**Result**
+
+The agent listed the available skills and explained that `seo-checklist` was currently loaded, while a video-editing or image-generation skill was not available in the environment.
+
 ## Example outputs
 
 1. SEO-optimized article generation
